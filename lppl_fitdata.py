@@ -131,4 +131,4 @@ if __name__ == '__main__':
                                str(args.maxiter)])
     line_to_print += '\t'+'\t'.join(map(lambda key: str(res_param[key]), 
                                         ['A', 'B', 'C', 'phi', 'omega', 'z', 'tc']))
-    print line_to_print
+    print(line_to_print)
