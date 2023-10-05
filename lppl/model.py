@@ -1,5 +1,6 @@
 
 from types import LambdaType
+from typing import Tuple, Literal
 from math import cos, sin, log
 
 import numpy as np
@@ -44,16 +45,39 @@ def _lppl_syseqn_matrix(
         tc: float,
         m: float,
         omega: float
-):
+) -> Tuple[np.typing.NDArray[np.float64], np.typing.NDArray[np.float64]]:
     syseqns_matrix = np.zeros((4, 4))
     syseqns_b = np.zeros(4)
     N = ts.shape[0]
     assert logprices.shape[0] == N
 
-    deltat_pow_m = (ts-tc)**m
+    deltat_pow_m = (tc-ts)**m
 
     syseqns_b[0] = np.sum(logprices)
     syseqns_b[1] = np.sum(deltat_pow_m * logprices)
     syseqns_b[2] = np.sum(deltat_pow_m * cos(omega * log(tc-ts)) * logprices)
     syseqns_b[3] = np.sum(deltat_pow_m * sin(omega * log(tc-ts)) * logprices)
+
+    syseqns_matrix[0, 0] = N
+    syseqns_matrix[0, 1] = np.sum(deltat_pow_m)
+    syseqns_matrix[0, 2] = np.sum(deltat_pow_m * np.cos(omega*np.log(tc-ts)))
+    syseqns_matrix[0, 3] = np.sum(deltat_pow_m * np.sin(omega*np.log(tc-ts)))
+
+    syseqns_matrix[1, 0] = np.sum(deltat_pow_m)
+    syseqns_matrix[1, 1] = np.sum(np.square(deltat_pow_m))
+    syseqns_matrix[1, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)))
+    syseqns_matrix[1, 3] = np.sum(np.square(deltat_pow_m) * np.sin(omega*np.log(tc-ts)))
+
+    syseqns_matrix[2, 0] = np.sum(deltat_pow_m * cos(omega * log(tc-ts)))
+    syseqns_matrix[2, 1] = np.sum(np.square(deltat_pow_m) * np.cos(omega * log(tc-ts)))
+    syseqns_matrix[2, 2] = np.sum(np.square(deltat_pow_m * np.cos(omega * log(tc-ts))))
+    syseqns_matrix[2, 3] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)) * np.sin(omega*np.log(tc-ts)))
+
+    syseqns_matrix[3, 0] = np.sum(deltat_pow_m * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[3, 1] = np.sum(np.square(deltat_pow_m) * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[3, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)) * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[3, 3] = np.sum(np.square(deltat_pow_m * np.sin(omega * log(tc-ts))))
+
+    return syseqns_matrix, syseqns_b
+
 
