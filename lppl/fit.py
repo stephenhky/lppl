@@ -1,6 +1,7 @@
 
 import numpy as np
 from scipy.optimize import minimize
+from typing import Union
 
 from .model import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -35,13 +36,21 @@ class LPPLModel:
         phi = np.atan(C2/C1)
 
         # making model
-        self.tc = tc
-        self.m = m
-        self.omega = omega
-        self.A = A
-        self.B = B
-        self.C = C
-        self.phi = phi
-        self.lppl_logprice_fcn = lppl_logprice_function(self.tc, self.m, self.omega, self.A, self.B, self.C, self.phi)
+        self._tc = tc
+        self._m = m
+        self._omega = omega
+        self._A = A
+        self._B = B
+        self._C = C
+        self._phi = phi
+        self._lppl_logprice_fcn = lppl_logprice_function(self._tc, self._m, self._omega, self._A, self._B, self._C, self._phi)
 
-        self.fitted = True
+        self._fitted = True
+
+    def __call__(self, t: Union[float, np.typing.NDArray[np.float64]]) -> Union[float, np.typing.NDArray[np.float64]]:
+        if self._fitted:
+            return np.exp(self._lppl_logprice_fcn(t))
+        else:
+            raise NotImplementedError()
+
+
