@@ -21,8 +21,7 @@ def lppl_logprice_function(
 
 def lppl_costfunction(
         ts: np.typing.NDArray[np.float64],
-        logprices: np.typing.NDArray[np.float64],
-
+        logprices: np.typing.NDArray[np.float64]
 ) -> LambdaType:
     def f(
             tc: float,
@@ -80,4 +79,20 @@ def _lppl_syseqn_matrix(
 
     return syseqns_matrix, syseqns_b
 
+
+def _lppl_slaved_costfunction(
+        ts: np.typing.NDArray[np.float64],
+        logprices: np.typing.NDArray[np.float64],
+) -> LambdaType:
+    def f(
+            tc: float,
+            m: float,
+            omega: float
+    ) -> np.float64:
+        cost_func = lppl_costfunction(ts, logprices)
+        lineqn_matrix, b = _lppl_syseqn_matrix(ts, logprices, tc, m, omega)
+        x = np.linalg.solve(lineqn_matrix, b)
+        return cost_func(x[0], x[1], x[2], x[3])
+
+    return f
 
