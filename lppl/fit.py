@@ -1,7 +1,9 @@
 
+from typing import Union, IO
+import json
+
 import numpy as np
 from scipy.optimize import minimize
-from typing import Union
 
 from .model import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -53,4 +55,70 @@ class LPPLModel:
         else:
             raise NotImplementedError()
 
+    @property
+    def tc(self) -> float:
+        return self._tc
 
+    @property
+    def m(self) -> float:
+        return self._m
+
+    @property
+    def omega(self) -> float:
+        return self._omega
+
+    @property
+    def A(self) -> float:
+        return self._A
+
+    @property
+    def B(self) -> float:
+        return self._B
+
+    @property
+    def C(self) -> float:
+        return self._C
+
+    @property
+    def phi(self) -> float:
+        return self._phi
+
+    @property
+    def fitted(self) -> bool:
+        return self._fitted
+
+    def dump_model_parameters(self):
+        return {
+            'tc': self._tc,
+            'm': self._m,
+            'omega': self._omega,
+            'A': self._A,
+            'B': self._B,
+            'C': self._C,
+            'phi': self._phi
+        }
+
+    def dump_model_jsonfile(self, f: IO):
+        json.dump(self.dump_model_parameters(), f)
+
+    @classmethod
+    def load_model_from_parameters(cls, param: dict):
+        model = cls()
+        model._tc = param['tc']
+        model._m = param['m']
+        model._omega = param['omega']
+        model._A = param['A']
+        model._B = param['B']
+        model._C = param['C']
+        model._phi = param['phi']
+        model._lppl_logprice_fcn = lppl_logprice_function(
+            model._tc, model._m, model._omega, model._A, model._B, model._C, model._phi
+        )
+        model._fitted = True
+
+        return model
+
+    @classmethod
+    def load_model_from_jsonfile(cls, f: IO):
+        param = json.load(f)
+        return cls.load_model_from_parameters(param)
