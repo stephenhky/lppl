@@ -5,7 +5,7 @@ import json
 import numpy as np
 from scipy.optimize import minimize
 
-from .model import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
+from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
 
 class LPPLModel:
