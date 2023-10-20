@@ -3,6 +3,7 @@ from typing import Union, IO
 import json
 
 import numpy as np
+import numpy.typing as npt
 from scipy.optimize import minimize
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
@@ -12,7 +13,7 @@ class LPPLModel:
     def __init__(self):
         self._fitted = False
 
-    def fit(self, ts: np.typing.NDArray[np.float64], prices: np.typing.NDArray[np.float64]):
+    def fit(self, ts: npt.NDArray[np.float64], prices: npt.NDArray[np.float64]):
         assert ts.shape[0] == prices.shape[0]
 
         logprices = np.log(prices)
@@ -49,7 +50,7 @@ class LPPLModel:
 
         self._fitted = True
 
-    def __call__(self, t: Union[float, np.typing.NDArray[np.float64]]) -> Union[float, np.typing.NDArray[np.float64]]:
+    def __call__(self, t: Union[float, npt.NDArray[np.float64]]) -> Union[float, npt.NDArray[np.float64]]:
         if self._fitted:
             return np.exp(self._lppl_logprice_fcn(t))
         else:

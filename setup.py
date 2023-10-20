@@ -43,6 +43,9 @@ setup(name='lppl',
       packages=['lppl'],
       package_dir={'lppl': 'lppl'},
       install_requires=install_requirements(),
+      test_require=[
+          'unittest'
+      ],
       test_suite="test",
       include_package_data=True,
       zip_safe=False)

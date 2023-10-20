@@ -4,6 +4,7 @@ from typing import Tuple
 from math import cos, sin, log
 
 import numpy as np
+import numpy.typing as npt
 
 
 def lppl_logprice_function(
@@ -20,8 +21,8 @@ def lppl_logprice_function(
 
 
 def lppl_costfunction(
-        ts: np.typing.NDArray[np.float64],
-        logprices: np.typing.NDArray[np.float64]
+        ts: npt.NDArray[np.float64],
+        logprices: npt.NDArray[np.float64]
 ) -> LambdaType:
     def f(
             tc: float,
@@ -39,12 +40,12 @@ def lppl_costfunction(
 
 
 def _lppl_syseqn_matrix(
-        ts: np.typing.NDArray[np.float64],
-        logprices: np.typing.NDArray[np.float64],
+        ts: npt.NDArray[np.float64],
+        logprices: npt.NDArray[np.float64],
         tc: float,
         m: float,
         omega: float
-) -> Tuple[np.typing.NDArray[np.float64], np.typing.NDArray[np.float64]]:
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     syseqns_matrix = np.zeros((4, 4))
     syseqns_b = np.zeros(4)
     N = ts.shape[0]
@@ -81,8 +82,8 @@ def _lppl_syseqn_matrix(
 
 
 def _lppl_slaved_costfunction(
-        ts: np.typing.NDArray[np.float64],
-        logprices: np.typing.NDArray[np.float64],
+        ts: npt.NDArray[np.float64],
+        logprices: npt.NDArray[np.float64],
 ) -> LambdaType:
     def f(
             tc: float,
