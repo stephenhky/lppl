@@ -9,9 +9,9 @@ from lppl.fit import LPPLModel
 class TestConsistency(unittest.TestCase):
     def test_case1(self):
         param = {
-            'A': 569.988,
-            'B': -266.943,
-            'C': 14.242,
+            'A': 1.0,
+            'B': -0.4,
+            'C': 0.5,
             'phi': 4.1,
             'omega': 7.877,
             'm': 0.445,
