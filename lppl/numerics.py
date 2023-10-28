@@ -1,7 +1,7 @@
 
 from types import LambdaType
 from typing import Tuple
-from math import cos, sin, log
+from math import cos, log
 
 import numpy as np
 import numpy.typing as npt
@@ -55,28 +55,28 @@ def _lppl_syseqn_matrix(
 
     syseqns_b[0] = np.sum(logprices)
     syseqns_b[1] = np.sum(deltat_pow_m * logprices)
-    syseqns_b[2] = np.sum(deltat_pow_m * cos(omega * log(tc-ts)) * logprices)
-    syseqns_b[3] = np.sum(deltat_pow_m * sin(omega * log(tc-ts)) * logprices)
+    syseqns_b[2] = np.sum(deltat_pow_m * np.cos(omega * np.log(tc-ts)) * logprices)
+    syseqns_b[3] = np.sum(deltat_pow_m * np.sin(omega * np.log(tc-ts)) * logprices)
 
     syseqns_matrix[0, 0] = N
     syseqns_matrix[0, 1] = np.sum(deltat_pow_m)
-    syseqns_matrix[0, 2] = np.sum(deltat_pow_m * np.cos(omega*np.log(tc-ts)))
-    syseqns_matrix[0, 3] = np.sum(deltat_pow_m * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[0, 2] = np.sum(deltat_pow_m * np.cos(omega * np.log(tc-ts)))
+    syseqns_matrix[0, 3] = np.sum(deltat_pow_m * np.sin(omega * np.log(tc-ts)))
 
     syseqns_matrix[1, 0] = np.sum(deltat_pow_m)
     syseqns_matrix[1, 1] = np.sum(np.square(deltat_pow_m))
-    syseqns_matrix[1, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)))
-    syseqns_matrix[1, 3] = np.sum(np.square(deltat_pow_m) * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[1, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega * np.log(tc-ts)))
+    syseqns_matrix[1, 3] = np.sum(np.square(deltat_pow_m) * np.sin(omega * np.log(tc-ts)))
 
-    syseqns_matrix[2, 0] = np.sum(deltat_pow_m * cos(omega * log(tc-ts)))
-    syseqns_matrix[2, 1] = np.sum(np.square(deltat_pow_m) * np.cos(omega * log(tc-ts)))
-    syseqns_matrix[2, 2] = np.sum(np.square(deltat_pow_m * np.cos(omega * log(tc-ts))))
-    syseqns_matrix[2, 3] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)) * np.sin(omega*np.log(tc-ts)))
+    syseqns_matrix[2, 0] = np.sum(deltat_pow_m * np.cos(omega * np.log(tc-ts)))
+    syseqns_matrix[2, 1] = np.sum(np.square(deltat_pow_m) * np.cos(omega * np.log(tc-ts)))
+    syseqns_matrix[2, 2] = np.sum(np.square(deltat_pow_m * np.cos(omega * np.log(tc-ts))))
+    syseqns_matrix[2, 3] = np.sum(np.square(deltat_pow_m) * np.cos(omega * np.log(tc-ts)) * np.sin(omega * np.log(tc-ts)))
 
-    syseqns_matrix[3, 0] = np.sum(deltat_pow_m * np.sin(omega*np.log(tc-ts)))
-    syseqns_matrix[3, 1] = np.sum(np.square(deltat_pow_m) * np.sin(omega*np.log(tc-ts)))
-    syseqns_matrix[3, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega*np.log(tc-ts)) * np.sin(omega*np.log(tc-ts)))
-    syseqns_matrix[3, 3] = np.sum(np.square(deltat_pow_m * np.sin(omega * log(tc-ts))))
+    syseqns_matrix[3, 0] = np.sum(deltat_pow_m * np.sin(omega * np.log(tc-ts)))
+    syseqns_matrix[3, 1] = np.sum(np.square(deltat_pow_m) * np.sin(omega * np.log(tc-ts)))
+    syseqns_matrix[3, 2] = np.sum(np.square(deltat_pow_m) * np.cos(omega * np.log(tc-ts)) * np.sin(omega * np.log(tc-ts)))
+    syseqns_matrix[3, 3] = np.sum(np.square(deltat_pow_m * np.sin(omega * np.log(tc-ts))))
 
     return syseqns_matrix, syseqns_b
 
@@ -93,7 +93,7 @@ def _lppl_slaved_costfunction(
         cost_func = lppl_costfunction(ts, logprices)
         lineqn_matrix, b = _lppl_syseqn_matrix(ts, logprices, tc, m, omega)
         x = np.linalg.solve(lineqn_matrix, b)
-        return cost_func(x[0], x[1], x[2], x[3])
+        return cost_func(tc, m, omega, x[0], x[1], x[2], x[3])
 
     return f
 
