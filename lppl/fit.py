@@ -26,7 +26,12 @@ class LPPLModel:
         init_omega = 1.
 
         # solve for non-linear parameters
-        sol = minimize(wr_slaved_costfunction, x0=np.array([init_tc, init_m, init_omega]), method='Nelder-Mead')
+        sol = minimize(
+            wr_slaved_costfunction,
+            x0=np.array([init_tc, init_m, init_omega]),
+            constraints=[{'type': 'ineq', 'fun': lambda x: x[0] > np.max(ts)}],
+            method='Nelder-Mead'
+        )
         tc = sol.x[0]
         m = sol.x[1]
         omega = sol.x[2]
