@@ -16,7 +16,11 @@ def lppl_logprice_function(
         C: float,
         phi: float
 ) -> np.vectorize:
-    logpfcn = lambda t: A + (tc-t)**m * (B + C*cos(omega*log(tc-t)-phi))
+    # logpfcn = lambda t: A + (tc-t)**m * (B + C*cos(omega*log(tc-t)-phi))
+    def logpfcn(t: float) -> float:
+        print("A={}; B={}; C={}; phi={}".format(A, B, C, phi))
+        print("tc={}; m={}; omega={}; phi={}; tc-t={}".format(tc, m, omega, phi, tc-t))
+        return A + (tc-t)**m * (B + C*cos(omega*log(tc-t)-phi))
     return np.vectorize(logpfcn)
 
 

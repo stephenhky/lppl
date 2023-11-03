@@ -1,10 +1,11 @@
 
 from typing import Union, IO
 import json
+from math import pi
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize
+from scipy.optimize import minimize, LinearConstraint
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -21,15 +22,21 @@ class LPPLModel:
         slaved_costfunction = _lppl_slaved_costfunction(ts, logprices)
         wr_slaved_costfunction = lambda x: slaved_costfunction(x[0], x[1], x[2])
 
-        init_tc = np.max(ts)
+        init_tc = np.max(ts) + 1
         init_m = 1.
         init_omega = 1.
 
         # solve for non-linear parameters
+        dt = ts[1:] - ts[0:-1]
+        constraint = LinearConstraint(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            [np.max(ts), 0, 0],
+            [np.inf, 0, 4*pi/np.min(dt)]
+        )
         sol = minimize(
             wr_slaved_costfunction,
             x0=np.array([init_tc, init_m, init_omega]),
-            constraints=[{'type': 'ineq', 'fun': lambda x: x[0] > np.max(ts)}],
+            constraints=constraint,
             method='Nelder-Mead'
         )
         tc = sol.x[0]
