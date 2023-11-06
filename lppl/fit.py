@@ -5,7 +5,8 @@ from math import pi
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize, LinearConstraint
+from scipy.optimize import minimize, LinearConstraint, Bounds
+# optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -23,20 +24,26 @@ class LPPLModel:
         wr_slaved_costfunction = lambda x: slaved_costfunction(x[0], x[1], x[2])
 
         init_tc = np.max(ts) + 1
-        init_m = 1.
+        init_m = 0.5
         init_omega = 1.
 
         # solve for non-linear parameters
+        print('max(ts) = {}'.format(np.max(ts)))
         dt = ts[1:] - ts[0:-1]
-        constraint = LinearConstraint(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-            [np.max(ts), 0, 0],
-            [np.inf, 0, 4*pi/np.min(dt)]
+        bounds = Bounds(
+            [np.max(ts) + 0.01, 0.1, 0.01],
+            [np.inf, 0.9, 4 * pi / np.min(dt)]
         )
+        # constraint = LinearConstraint(
+        #     [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+        #     [np.max(ts)+0.01, 0.1, 0.01],
+        #     [np.inf, 0.9, 4*pi/np.min(dt)]
+        # )
         sol = minimize(
             wr_slaved_costfunction,
             x0=np.array([init_tc, init_m, init_omega]),
-            constraints=constraint,
+            # constraints=constraint,
+            bounds=bounds,
             method='Nelder-Mead'
         )
         tc = sol.x[0]
@@ -45,10 +52,10 @@ class LPPLModel:
 
         # solve for linear parameters
         syseqn_matrix, b = _lppl_syseqn_matrix(ts, logprices, tc, m, omega)
-        linX = np.linalg.solve(syseqn_matrix)
+        linX = np.linalg.solve(syseqn_matrix, b)
         A, B, C1, C2 = linX[0], linX[1], linX[2], linX[3]
         C = np.sqrt(C1*C1+C2*C2)
-        phi = np.atan(C2/C1)
+        phi = np.arctan(C2/C1)
 
         # making model
         self._tc = tc

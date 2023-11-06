@@ -18,8 +18,8 @@ def lppl_logprice_function(
 ) -> np.vectorize:
     # logpfcn = lambda t: A + (tc-t)**m * (B + C*cos(omega*log(tc-t)-phi))
     def logpfcn(t: float) -> float:
-        print("A={}; B={}; C={}; phi={}".format(A, B, C, phi))
-        print("tc={}; m={}; omega={}; phi={}; tc-t={}".format(tc, m, omega, phi, tc-t))
+        # print("A={}; B={}; C={}; phi={}".format(A, B, C, phi))
+        # print("tc={}; m={}; omega={}; phi={}; tc-t={}".format(tc, m, omega, phi, tc-t))
         return A + (tc-t)**m * (B + C*cos(omega*log(tc-t)-phi))
     return np.vectorize(logpfcn)
 
@@ -94,9 +94,12 @@ def _lppl_slaved_costfunction(
             m: float,
             omega: float
     ) -> np.float64:
+        print('tc={}; m={}; omega={}'.format(tc, m, omega))
+
         cost_func = lppl_costfunction(ts, logprices)
         lineqn_matrix, b = _lppl_syseqn_matrix(ts, logprices, tc, m, omega)
         x = np.linalg.solve(lineqn_matrix, b)
+        print('sol: {}'.format(x))
         return cost_func(tc, m, omega, x[0], x[1], x[2], x[3])
 
     return f
