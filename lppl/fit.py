@@ -5,7 +5,7 @@ from math import pi
 
 import numpy as np
 import numpy.typing as npt
-from scipy.optimize import minimize, LinearConstraint, Bounds
+from scipy.optimize import minimize, Bounds
 # optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
@@ -28,17 +28,12 @@ class LPPLModel:
         init_omega = 1.
 
         # solve for non-linear parameters
-        print('max(ts) = {}'.format(np.max(ts)))
+        # print('max(ts) = {}'.format(np.max(ts)))
         dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
             [np.max(ts) + 0.01, 0.1, 0.01],
             [np.inf, 0.9, 4 * pi / np.min(dt)]
         )
-        # constraint = LinearConstraint(
-        #     [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
-        #     [np.max(ts)+0.01, 0.1, 0.01],
-        #     [np.inf, 0.9, 4*pi/np.min(dt)]
-        # )
         sol = minimize(
             wr_slaved_costfunction,
             x0=np.array([init_tc, init_m, init_omega]),

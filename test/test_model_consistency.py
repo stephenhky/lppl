@@ -30,6 +30,7 @@ class TestConsistency(unittest.TestCase):
         print('phi: {}'.format(fitted_lppl_model.phi))
         print('m: {}'.format(fitted_lppl_model.m))
         print('tc: {}'.format(fitted_lppl_model.tc))
+        assert fitted_lppl_model.A == A
 
 
 
