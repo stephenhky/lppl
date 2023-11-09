@@ -6,7 +6,6 @@ from math import pi
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds
-# optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -37,7 +36,6 @@ class LPPLModel:
         sol = minimize(
             wr_slaved_costfunction,
             x0=np.array([init_tc, init_m, init_omega]),
-            # constraints=constraint,
             bounds=bounds,
             method='Nelder-Mead'
         )
@@ -116,6 +114,22 @@ class LPPLModel:
     def dump_model_jsonfile(self, f: IO):
         json.dump(self.dump_model_parameters(), f)
 
+    def summary(self) -> str:
+        if self._fitted:
+            summarytxt = "tc: {}".format(self._tc) + '\n'
+            summarytxt += "m: {}".format(self.m) + '\n'
+            summarytxt += "omega: {}".format(self._omega) + '\n'
+            summarytxt += "A: {}".format(self._A) + '\n'
+            summarytxt += "B: {}".format(self._B) + '\n'
+            summarytxt += "C: {}".format(self._C) + '\n'
+            summarytxt += "phi: {}".format(self._phi)
+            return summarytxt
+        else:
+            return "Model not fitted."
+
+    def __str__(self):
+        return self.summary()
+
     @classmethod
     def load_model_from_parameters(cls, param: dict):
         model = cls()
@@ -137,3 +151,6 @@ class LPPLModel:
     def load_model_from_jsonfile(cls, f: IO):
         param = json.load(f)
         return cls.load_model_from_parameters(param)
+
+# optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
+
