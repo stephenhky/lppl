@@ -30,8 +30,8 @@ class LPPLModel:
         # print('max(ts) = {}'.format(np.max(ts)))
         dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
-            [np.max(ts) + 0.01, 0.1, 0.01],
-            [np.inf, 0.9, 4 * pi / np.min(dt)]
+            [np.max(ts) + 0.01, 0.1, 6.],
+            [np.inf, 0.9, 13.]
         )
         sol = minimize(
             wr_slaved_costfunction,
