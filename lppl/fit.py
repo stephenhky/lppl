@@ -13,6 +13,10 @@ from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_s
 class LPPLModel:
     def __init__(self):
         self._fitted = False
+        self._m_lo = 0.1
+        self._m_hi = 0.9
+        self._omega_lo = 6. / (24. * 3600)
+        self._omega_hi = 13. / (24. * 3600)
 
     def fit(self, ts: npt.NDArray[np.float64], prices: npt.NDArray[np.float64]):
         assert ts.shape[0] == prices.shape[0]
@@ -30,8 +34,8 @@ class LPPLModel:
         # print('max(ts) = {}'.format(np.max(ts)))
         dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
-            [np.max(ts) + 0.01, 0.1, 6.],
-            [np.inf, 0.9, 13.]
+            [np.max(ts) + 0.01, self._m_lo, self._omega_lo],
+            [np.inf, self._m_hi, self._omega_hi]
         )
         sol = minimize(
             wr_slaved_costfunction,
@@ -99,6 +103,38 @@ class LPPLModel:
     @property
     def fitted(self) -> bool:
         return self._fitted
+
+    @property
+    def m_lo(self) -> float:
+        return self._m_lo
+
+    @property
+    def m_hi(self) -> float:
+        return self._m_hi
+
+    @property
+    def omega_lo(self) -> float:
+        return self._omega_lo
+
+    @property
+    def omega_hi(self) -> float:
+        return self._omega_hi
+
+    @m_lo.setter
+    def m_lo(self, value: float):
+        self._m_lo = value
+
+    @m_hi.setter
+    def m_hi(self, value: float):
+        self._m_hi = value
+
+    @omega_lo.setter
+    def omega_lo(self, value: float):
+        self._omega_lo = value
+
+    @omega_hi.setter
+    def omega_hi(self, value: float):
+        self.omega_hi = value
 
     def dump_model_parameters(self):
         return {
