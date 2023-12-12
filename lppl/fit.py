@@ -134,7 +134,7 @@ class LPPLModel:
 
     @omega_hi.setter
     def omega_hi(self, value: float):
-        self.omega_hi = value
+        self._omega_hi = value
 
     def dump_model_parameters(self):
         return {
