@@ -1,6 +1,5 @@
 
 from setuptools import setup
-import numpy as np
 
 
 def readme():

@@ -6,7 +6,6 @@ from math import pi
 import numpy as np
 import numpy.typing as npt
 from scipy.optimize import minimize, Bounds
-# optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
 
 from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_syseqn_matrix
 
@@ -14,6 +13,11 @@ from .numerics import lppl_logprice_function, _lppl_slaved_costfunction, _lppl_s
 class LPPLModel:
     def __init__(self):
         self._fitted = False
+        self._m_lo = 0.1
+        self._m_hi = 0.9
+        self._omega_lo = 6. / (24. * 3600)
+        self._omega_hi = 13. / (24. * 3600)
+        self._tcgap = 0.5
 
     def fit(self, ts: npt.NDArray[np.float64], prices: npt.NDArray[np.float64]):
         assert ts.shape[0] == prices.shape[0]
@@ -29,15 +33,14 @@ class LPPLModel:
 
         # solve for non-linear parameters
         # print('max(ts) = {}'.format(np.max(ts)))
-        dt = ts[1:] - ts[0:-1]
+        # dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
-            [np.max(ts) + 0.01, 0.1, 0.01],
-            [np.inf, 0.9, 4 * pi / np.min(dt)]
+            [np.max(ts) + self._tcgap, self._m_lo, self._omega_lo],
+            [np.inf, self._m_hi, self._omega_hi]
         )
         sol = minimize(
             wr_slaved_costfunction,
             x0=np.array([init_tc, init_m, init_omega]),
-            # constraints=constraint,
             bounds=bounds,
             method='Nelder-Mead'
         )
@@ -102,6 +105,46 @@ class LPPLModel:
     def fitted(self) -> bool:
         return self._fitted
 
+    @property
+    def m_lo(self) -> float:
+        return self._m_lo
+
+    @property
+    def m_hi(self) -> float:
+        return self._m_hi
+
+    @property
+    def omega_lo(self) -> float:
+        return self._omega_lo
+
+    @property
+    def omega_hi(self) -> float:
+        return self._omega_hi
+
+    @property
+    def tcgap(self) -> float:
+        return self._tcgap
+
+    @m_lo.setter
+    def m_lo(self, value: float):
+        self._m_lo = value
+
+    @m_hi.setter
+    def m_hi(self, value: float):
+        self._m_hi = value
+
+    @omega_lo.setter
+    def omega_lo(self, value: float):
+        self._omega_lo = value
+
+    @omega_hi.setter
+    def omega_hi(self, value: float):
+        self._omega_hi = value
+
+    @tcgap.setter
+    def tcgap(self, value: float):
+        self._tcgap = value
+
     def dump_model_parameters(self):
         return {
             'tc': self._tc,
@@ -115,6 +158,22 @@ class LPPLModel:
 
     def dump_model_jsonfile(self, f: IO):
         json.dump(self.dump_model_parameters(), f)
+
+    def summary(self) -> str:
+        if self._fitted:
+            summarytxt = "tc: {}".format(self._tc) + '\n'
+            summarytxt += "m: {}".format(self.m) + '\n'
+            summarytxt += "omega: {}".format(self._omega) + '\n'
+            summarytxt += "A: {}".format(self._A) + '\n'
+            summarytxt += "B: {}".format(self._B) + '\n'
+            summarytxt += "C: {}".format(self._C) + '\n'
+            summarytxt += "phi: {}".format(self._phi)
+            return summarytxt
+        else:
+            return "Model not fitted."
+
+    def __str__(self):
+        return self.summary()
 
     @classmethod
     def load_model_from_parameters(cls, param: dict):
@@ -137,3 +196,6 @@ class LPPLModel:
     def load_model_from_jsonfile(cls, f: IO):
         param = json.load(f)
         return cls.load_model_from_parameters(param)
+
+# optimization ref: https://towardsdatascience.com/introduction-to-optimization-constraints-with-scipy-7abd44f6de25#5ca2
+

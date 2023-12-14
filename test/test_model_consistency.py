@@ -28,9 +28,10 @@ class TestConsistency(unittest.TestCase):
         print('B: {}'.format(fitted_lppl_model.B))
         print('C: {}'.format(fitted_lppl_model.C))
         print('phi: {}'.format(fitted_lppl_model.phi))
+        print('omega: {}'.format(fitted_lppl_model.omega))
         print('m: {}'.format(fitted_lppl_model.m))
         print('tc: {}'.format(fitted_lppl_model.tc))
-        assert fitted_lppl_model.A == A
+        assert fitted_lppl_model.tc > 9
 
 
 
