@@ -17,6 +17,7 @@ class LPPLModel:
         self._m_hi = 0.9
         self._omega_lo = 6. / (24. * 3600)
         self._omega_hi = 13. / (24. * 3600)
+        self._tcgap = 0.5
 
     def fit(self, ts: npt.NDArray[np.float64], prices: npt.NDArray[np.float64]):
         assert ts.shape[0] == prices.shape[0]
@@ -32,9 +33,9 @@ class LPPLModel:
 
         # solve for non-linear parameters
         # print('max(ts) = {}'.format(np.max(ts)))
-        dt = ts[1:] - ts[0:-1]
+        # dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
-            [np.max(ts) + 0.01, self._m_lo, self._omega_lo],
+            [np.max(ts) + self._tcgap, self._m_lo, self._omega_lo],
             [np.inf, self._m_hi, self._omega_hi]
         )
         sol = minimize(
@@ -120,6 +121,10 @@ class LPPLModel:
     def omega_hi(self) -> float:
         return self._omega_hi
 
+    @property
+    def tcgap(self) -> float:
+        return self._tcgap
+
     @m_lo.setter
     def m_lo(self, value: float):
         self._m_lo = value
@@ -135,6 +140,10 @@ class LPPLModel:
     @omega_hi.setter
     def omega_hi(self, value: float):
         self._omega_hi = value
+
+    @tcgap.setter
+    def tcgap(self, value: float):
+        self._tcgap = value
 
     def dump_model_parameters(self):
         return {
