@@ -18,7 +18,7 @@ def install_requirements():
 
 
 setup(name='lppl',
-      version="0.0.1",
+      version="0.0.2a1",
       description="LPPL Model",
       long_description=package_description(),
       long_description_content_type='text/markdown',

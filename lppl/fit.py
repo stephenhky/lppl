@@ -1,7 +1,6 @@
 
 from typing import Union, IO
 import json
-from math import pi
 
 import numpy as np
 import numpy.typing as npt
@@ -27,13 +26,11 @@ class LPPLModel:
         slaved_costfunction = _lppl_slaved_costfunction(ts, logprices)
         wr_slaved_costfunction = lambda x: slaved_costfunction(x[0], x[1], x[2])
 
-        init_tc = np.max(ts) + 1
+        init_tc = np.max(ts) + self._tcgap * 100
         init_m = 0.5
-        init_omega = 1.
+        init_omega = 0.5 * (self._omega_lo + self._omega_hi)
 
         # solve for non-linear parameters
-        # print('max(ts) = {}'.format(np.max(ts)))
-        # dt = ts[1:] - ts[0:-1]
         bounds = Bounds(
             [np.max(ts) + self._tcgap, self._m_lo, self._omega_lo],
             [np.inf, self._m_hi, self._omega_hi]
