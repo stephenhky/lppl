@@ -25,6 +25,9 @@ classifiers = [
   "Intended Audience :: Developers",
   "Intended Audience :: Financial and Insurance Industry"
 ]
+dependencies = ["numpy", "scipy"]
+test_dependencies = ["unittest"]
 
 [tool.setuptools]
 packages = ["lppl"]
+zip-safe = false
