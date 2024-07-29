@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm", "wheel", "numpy >= 1.18"]
 
 [project]
 name = "lppl"
-version = "0.0.3"
+version = "0.0.4a1"
 authors = [
     {name = "Kwan Yuet Stephen Ho", email = "stephenhky@yahoo.com.hk"}
 ]
