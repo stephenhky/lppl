@@ -7,7 +7,6 @@ def install_requirements():
 
 
 setup(url="https://github.com/stephenhky/lppl",
-      license='MIT',
       install_requires=install_requirements(),
       test_require=['unittest'],
       test_suite="test",
