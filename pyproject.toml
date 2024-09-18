@@ -27,6 +27,13 @@ classifiers = [
 ]
 dependencies = ["numpy", "scipy"]
 
+[project.urls]
+Repository = "https://github.com/stephenhky/lppl"
+Issues = "https://github.com/stephenhky/lppl/issues"
+
 [tool.setuptools]
 packages = ["lppl"]
 zip-safe = false
+
+[project.optional-dependencies]
+test = ["unittest"]
