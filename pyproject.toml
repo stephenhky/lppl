@@ -1,9 +1,10 @@
 [build-system]
 requires = ["setuptools", "setuptools-scm", "wheel", "numpy >= 1.18"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "lppl"
-version = "0.0.3"
+version = "0.0.4"
 authors = [
     {name = "Kwan Yuet Stephen Ho", email = "stephenhky@yahoo.com.hk"}
 ]
@@ -27,6 +28,13 @@ classifiers = [
 ]
 dependencies = ["numpy", "scipy"]
 
+[project.urls]
+Repository = "https://github.com/stephenhky/lppl"
+Issues = "https://github.com/stephenhky/lppl/issues"
+
 [tool.setuptools]
 packages = ["lppl"]
 zip-safe = false
+
+[project.optional-dependencies]
+test = ["unittest"]
